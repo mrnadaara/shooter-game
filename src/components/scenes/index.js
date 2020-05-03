@@ -1,5 +1,9 @@
-import SimpleScene from './simple-scene';
+import Main from './Main';
+import GameOver from './GameOver';
+import MainMenu from './MainMenu';
 
 export {
-  SimpleScene,
+  Main,
+  GameOver,
+  MainMenu,
 };

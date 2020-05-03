@@ -43,10 +43,18 @@ module.exports = {
         test: /\.(png|jp(e*)g|svg)$/i,
         use: [
           {
-            loader: 'url-loader',
+            loader: 'file-loader',
+          },
+        ],
+      },
+      {
+        test: /\.(wav)$/i,
+        use: [
+          {
+            loader: 'file-loader',
             options: {
-              limit: 8192,
-              outputPath: 'images',
+              name: '[name].[ext]',
+              outputPath: 'sounds/',
             },
           },
         ],

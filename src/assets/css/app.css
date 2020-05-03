@@ -1,1 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
+body {
+  font-family: 'Staatliches', cursive;
+}
+
+#content {
+  height: 100vh;
+  background: #300000;
+  background: linear-gradient(45deg, #000428, #004e92);
+}
+
+.no-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
