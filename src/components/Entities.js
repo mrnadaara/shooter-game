@@ -1,4 +1,4 @@
-import { GameObjects } from 'phaser';
+import { GameObjects, Math } from 'phaser';
 
 export default class Entity extends GameObjects.Sprite {
   constructor(scene, x, y, key, type) {
@@ -8,5 +8,37 @@ export default class Entity extends GameObjects.Sprite {
     this.scene.physics.world.enableBody(this, 0);
     this.setData('type', type);
     this.setData('isDead', false);
+  }
+
+  explode(canDestroy) {
+    if (!this.getData('isDead')) {
+      this.setTexture('Explosions1');
+      this.play('Explosions1');
+
+      this.scene.sfx.explosions.play();
+
+      if (this.shootTimer !== undefined) {
+        if (this.shootTimer) {
+          this.shootTimer.remove(false);
+        }
+      }
+
+      this.setAngle(0);
+      this.body.setVelocity(0, 0);
+
+      this.on(
+        'animationcomplete',
+        () => {
+          if (canDestroy) {
+            this.destroy();
+          } else {
+            this.setVisible(false);
+          }
+        },
+        this,
+      );
+
+      this.setData('isDead', true);
+    }
   }
 }

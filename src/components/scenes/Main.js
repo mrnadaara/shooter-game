@@ -1,6 +1,8 @@
 import Phaser, { Scene } from 'phaser';
 import Player from '../Player';
 import DruidEnemy from '../Enemy/Druid';
+import DeathEnemy from '../Enemy/Death';
+import SkeletonZombie from '../Enemy/SkeletonZombie';
 import Hitman from '../../assets/images/game/character/hitman1_machine.png';
 import BrownTile from '../../assets/images/game/Tiles/tile_97.png';
 import Explosions1 from '../../assets/images/game/explosions/explosion-4.png';
@@ -77,12 +79,34 @@ export default class Main extends Scene {
     this.time.addEvent({
       delay: 1000,
       callback: () => {
-        const enemy = new DruidEnemy(
-          this,
-          this.game.config.width,
-          Phaser.Math.Between(0, this.game.config.height),
-        );
-        this.enemies.add(enemy);
+        let enemy = null;
+
+        if (Phaser.Math.Between(0, 10) >= 3) {
+          enemy = new DruidEnemy(
+            this,
+            this.game.config.width,
+            Phaser.Math.Between(0, this.game.config.height),
+          );
+        } else if (Phaser.Math.Between(0, 10) >= 5) {
+          if (this.getEnemiesByType('Death').length < 5) {
+            enemy = new DeathEnemy(
+              this,
+              this.game.config.width,
+              Phaser.Math.Between(0, this.game.config.height),
+            );
+          }
+        } else {
+          enemy = new SkeletonZombie(
+            this,
+            this.game.config.width,
+            Phaser.Math.Between(0, this.game.config.height),
+          );
+        }
+
+        if (enemy !== null) {
+          enemy.setScale(Phaser.Math.Between(10, 20) * 0.1);
+          this.enemies.add(enemy);
+        }
       },
       callbackScope: this,
       loop: true,
@@ -97,21 +121,124 @@ export default class Main extends Scene {
       this.game.config.height * 0.5,
       'Hitman',
     );
+
+    this.physics.add.collider(
+      this.playerFire,
+      this.enemies,
+      (playerFire, enemy) => {
+        if (enemy) {
+          if (enemy.onDestroy !== undefined) {
+            enemy.onDestroy();
+          }
+
+          enemy.explode(true);
+          playerFire.destroy();
+        }
+      },
+    );
+
+    this.physics.add.overlap(this.player, this.enemies, (player, enemy) => {
+      if (!player.getData('isDead') && !enemy.getData('isDead')) {
+        player.explode(false);
+        enemy.explode(true);
+      }
+    });
+
+    this.physics.add.overlap(this.player, this.enemyFire, (player, fire) => {
+      if (!player.getData('isDead') && !fire.getData('isDead')) {
+        player.explode(false);
+        fire.destroy();
+      }
+    });
   }
 
   update() {
-    this.player.update();
+    if (!this.player.getData('isDead')) {
+      this.player.update();
+      if (this.keyW.isDown) {
+        this.player.moveUp();
+      } else if (this.keyS.isDown) {
+        this.player.moveDown();
+      }
+      if (this.keyA.isDown) {
+        this.player.moveLeft();
+      } else if (this.keyD.isDown) {
+        this.player.moveRight();
+      }
 
-    if (this.keyW.isDown) {
-      this.player.moveUp();
-    } else if (this.keyS.isDown) {
-      this.player.moveDown();
+      if (this.keySpace.isDown) {
+        this.player.setData('isShooting', true);
+      } else {
+        this.player.setData(
+          'timerShootTick',
+          this.player.getData('timerShootDelay') - 1,
+        );
+        this.player.setData('isShooting', false);
+      }
     }
 
-    if (this.keyA.isDown) {
-      this.player.moveLeft();
-    } else if (this.keyD.isDown) {
-      this.player.moveRight();
+    for (let i = 0; i < this.enemies.getChildren().length; i++) {
+      const enemy = this.enemies.getChildren()[i];
+
+      enemy.update();
+
+      if (
+        enemy.x < -enemy.displayWidth
+        || enemy.x > this.game.config.width + enemy.displayWidth
+        || enemy.y < -enemy.displayHeight * 4
+        || enemy.y > this.game.config.height + enemy.displayHeight
+      ) {
+        if (enemy) {
+          if (enemy.onDestroy !== undefined) {
+            enemy.onDestroy();
+          }
+
+          enemy.destroy();
+        }
+      }
     }
+
+    for (let i = 0; i < this.enemyFire.getChildren().length; i++) {
+      const fire = this.enemyFire.getChildren()[i];
+      fire.update();
+
+      if (
+        fire.x < -fire.displayWidth
+        || fire.x > this.game.config.width + fire.displayWidth
+        || fire.y < -fire.displayHeight * 4
+        || fire.y > this.game.config.height + fire.displayHeight
+      ) {
+        if (fire) {
+          fire.destroy();
+        }
+      }
+    }
+
+    for (let i = 0; i < this.playerFire.getChildren().length; i++) {
+      const fire = this.playerFire.getChildren()[i];
+      fire.update();
+
+      if (
+        fire.x < -fire.displayWidth
+        || fire.x > this.game.config.width + fire.displayWidth
+        || fire.y < -fire.displayHeight * 4
+        || fire.y > this.game.config.height + fire.displayHeight
+      ) {
+        if (fire) {
+          fire.destroy();
+        }
+      }
+    }
+  }
+
+  getEnemiesByType(type) {
+    const arr = [];
+    for (let i = 0; i < this.enemies.getChildren().length; i++) {
+      const enemy = this.enemies.getChildren()[i];
+      if (enemy.getData('type') === type) {
+        arr.push(enemy);
+      }
+    }
+    return arr;
   }
 }
