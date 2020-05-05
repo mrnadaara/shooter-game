@@ -1,4 +1,4 @@
-import { GameObjects, Math } from 'phaser';
+import { GameObjects } from 'phaser';
 
 export default class Entity extends GameObjects.Sprite {
   constructor(scene, x, y, key, type) {
@@ -15,7 +15,11 @@ export default class Entity extends GameObjects.Sprite {
       this.setTexture('Explosions1');
       this.play('Explosions1');
 
-      this.scene.sfx.explosions.play();
+      if (canDestroy) {
+        this.scene.sfx.explosions.play();
+      } else {
+        this.scene.sfx.spell.play();
+      }
 
       if (this.shootTimer !== undefined) {
         if (this.shootTimer) {
@@ -32,7 +36,7 @@ export default class Entity extends GameObjects.Sprite {
           if (canDestroy) {
             this.destroy();
           } else {
-            this.setVisible(false);
+            this.setVisible(true);
           }
         },
         this,

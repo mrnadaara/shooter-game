@@ -5,17 +5,16 @@ import DeathEnemy from '../Enemy/Death';
 import SkeletonZombie from '../Enemy/SkeletonZombie';
 import Hitman from '../../assets/images/game/character/hitman1_machine.png';
 import BrownTile from '../../assets/images/game/Tiles/tile_97.png';
-import Explosions1 from '../../assets/images/game/explosions/explosion-4.png';
-import Explosions2 from '../../assets/images/game/explosions/explosion-2.png';
 import Background from '../../assets/images/game/background.png';
 import Bullet from '../../assets/images/game/Projectiles/bullet1.png';
-import Cannon from '../../assets/images/game/Projectiles/bullet4.png';
 import Zombie1 from '../../assets/images/game/enemies/zombie.png';
 import Zombie2 from '../../assets/images/game/enemies/zombie-2.png';
 import Death from '../../assets/images/game/enemies/death_speaker2.png';
 import Druid from '../../assets/images/game/enemies/druid2.png';
+import { Explosion, Magic } from '../../helpers';
 import ExplosionSound from '../../assets/sounds/explode.wav';
 import PistolSound from '../../assets/sounds/pistol.wav';
+import SpellSound from '../../assets/sounds/spell.wav';
 
 export default class Main extends Scene {
   constructor() {
@@ -25,17 +24,14 @@ export default class Main extends Scene {
   preload() {
     this.load.image('Hitman', Hitman);
     this.load.image('BrownTile', BrownTile);
-    this.load.spritesheet('Explosions1', Explosions1, {
-      frameWidth: 32,
-      frameHeight: 32,
+    Explosion.forEach((exp) => {
+      this.load.image(exp.name, exp.asset);
     });
-    this.load.spritesheet('Explosions2', Explosions2, {
-      frameWidth: 32,
-      frameHeight: 32,
+    Magic.forEach((spell) => {
+      this.load.image(spell.name, spell.asset);
     });
     this.load.image('Background', Background);
     this.load.image('Bullet', Bullet);
-    this.load.image('Cannon', Cannon);
     this.load.image('Zombie1', Zombie1);
     this.load.image('Zombie2', Zombie2);
     this.load.image('Death', Death);
@@ -43,24 +39,25 @@ export default class Main extends Scene {
 
     this.load.audio('Explosions', ExplosionSound);
     this.load.audio('Pistol', PistolSound);
+    this.load.audio('Spell', SpellSound);
   }
 
   create() {
     this.anims.create({
       key: 'Explosions1',
-      frames: this.anims.generateFrameNumbers('Explosions1'),
+      frames: Explosion.map(exp => ({ key: exp.name })),
       frameRate: 20,
-      repeat: -1,
     });
+
     this.anims.create({
-      key: 'Explosions2',
-      frames: this.anims.generateFrameNumbers('Explosions2'),
+      key: 'Magic',
+      frames: Magic.map((spell) => ({ key: spell.name })),
       frameRate: 20,
-      repeat: -1,
     });
 
     this.sfx = {
       explosions: this.sound.add('Explosions'),
+      spell: this.sound.add('Spell'),
       pistol: this.sound.add('Pistol'),
     };
 
@@ -77,7 +74,7 @@ export default class Main extends Scene {
     this.playerFire = this.add.group();
 
     this.time.addEvent({
-      delay: 1000,
+      delay: 2000,
       callback: () => {
         let enemy = null;
 
@@ -104,7 +101,7 @@ export default class Main extends Scene {
         }
 
         if (enemy !== null) {
-          enemy.setScale(Phaser.Math.Between(10, 20) * 0.1);
+          enemy.setScale(13 * 0.1);
           this.enemies.add(enemy);
         }
       },
@@ -113,7 +110,6 @@ export default class Main extends Scene {
     });
 
     this.add.image(400, 400, 'Background');
-    this.add.text(100, 100, 'Hello Phaser!');
 
     this.player = new Player(
       this,
@@ -141,6 +137,7 @@ export default class Main extends Scene {
       if (!player.getData('isDead') && !enemy.getData('isDead')) {
         player.explode(false);
         enemy.explode(true);
+        player.onDestroy();
       }
     });
 
@@ -148,6 +145,7 @@ export default class Main extends Scene {
       if (!player.getData('isDead') && !fire.getData('isDead')) {
         player.explode(false);
         fire.destroy();
+        player.onDestroy();
       }
     });
   }

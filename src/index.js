@@ -18,7 +18,7 @@ const gameConfig = {
   type: Phaser.AUTO,
   width: 800,
   height: 700,
-  scene: [Main, GameOver, MainMenu],
+  scene: [MainMenu, Main, GameOver],
   parent: 'main',
   backgroundColor: '#000428',
   physics: {
