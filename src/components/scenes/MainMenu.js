@@ -58,11 +58,24 @@ export default class MainMenu extends Scene {
     this.btnPlay.on(
       'pointerup',
       () => {
-        this.scene.start('Main');
-        this.sfx.start.on('complete', () => {
-          this.sfx.music.play();
-        });
-        this.sfx.start.play();
+        if (!localStorage.getItem('playerName')) {
+          // eslint-disable-next-line no-alert
+          const player = prompt('Please enter your name', 'name');
+          if (player) {
+            localStorage.setItem('playerName', player);
+            this.scene.start('Main');
+            this.sfx.start.on('complete', () => {
+              this.sfx.music.play();
+            });
+            this.sfx.start.play();
+          }
+        } else {
+          this.scene.start('Main');
+          this.sfx.start.on('complete', () => {
+            this.sfx.music.play();
+          });
+          this.sfx.start.play();
+        }
       },
       this,
     );

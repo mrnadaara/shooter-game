@@ -3,6 +3,11 @@ import { Scene } from 'phaser';
 export default class GameOver extends Scene {
   constructor() {
     super({ key: 'GameOver' });
+    this.score = 0;
+  }
+
+  init({ score }) {
+    this.score = score;
   }
 
   create() {
@@ -14,7 +19,7 @@ export default class GameOver extends Scene {
 
     this.btnPlay = this.add.sprite(
       this.game.config.width * 0.5,
-      this.game.config.height * 0.5,
+      this.game.config.height - 100,
       'play30',
     );
 
@@ -37,7 +42,7 @@ export default class GameOver extends Scene {
     this.btnPlay.on(
       'pointerup',
       () => {
-        this.scene.start('Main');
+        this.scene.start('Main', { score: 0 });
         this.sfx.start.on('complete', () => {
           this.sfx.music.play();
         });
@@ -48,8 +53,8 @@ export default class GameOver extends Scene {
 
     this.title = this.add.text(
       this.game.config.width * 0.5,
-      150,
-      'Game Over',
+      100,
+      `Game Over\nFinal Score: ${this.score}`,
       {
         fontFamily: 'monospace',
         fontSize: 48,

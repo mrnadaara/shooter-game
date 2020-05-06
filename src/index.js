@@ -9,7 +9,6 @@ import '@fortawesome/fontawesome-free/js/brands';
 import './assets/css/app.css';
 import Components from './components';
 import { Main, MainMenu, GameOver } from './components/scenes';
-import Entity from './components/Entities';
 
 const content = new Components();
 content.render();
@@ -29,6 +28,9 @@ const gameConfig = {
   },
   pixelArt: true,
   roundPixels: true,
+  dom: {
+    createContainer: true,
+  },
 };
 
 if (document.readyState === 'complete') {

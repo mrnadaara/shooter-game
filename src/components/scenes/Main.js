@@ -19,6 +19,11 @@ import SpellSound from '../../assets/sounds/spell.wav';
 export default class Main extends Scene {
   constructor() {
     super({ key: 'Main' });
+    this.score = 0;
+  }
+
+  init() {
+    this.score = 0;
   }
 
   preload() {
@@ -111,6 +116,19 @@ export default class Main extends Scene {
 
     this.add.image(400, 400, 'Background');
 
+    this.title = this.add.text(
+      5,
+      20,
+      `${localStorage.getItem('playerName')}: ${this.score}`,
+      {
+        fontFamily: 'monospace',
+        fontSize: 28,
+        fontStyle: 'bold',
+        color: '#ffffff',
+        align: 'center',
+      },
+    );
+
     this.player = new Player(
       this,
       this.game.config.width * 0.5,
@@ -126,7 +144,8 @@ export default class Main extends Scene {
           if (enemy.onDestroy !== undefined) {
             enemy.onDestroy();
           }
-
+          this.score = this.score += 10;
+          this.title.setText(`${localStorage.getItem('playerName')}: ${this.score}`);
           enemy.explode(true);
           playerFire.destroy();
         }
@@ -137,7 +156,7 @@ export default class Main extends Scene {
       if (!player.getData('isDead') && !enemy.getData('isDead')) {
         player.explode(false);
         enemy.explode(true);
-        player.onDestroy();
+        player.onDestroy(this.score);
       }
     });
 
@@ -145,7 +164,7 @@ export default class Main extends Scene {
       if (!player.getData('isDead') && !fire.getData('isDead')) {
         player.explode(false);
         fire.destroy();
-        player.onDestroy();
+        player.onDestroy(this.score);
       }
     });
   }
