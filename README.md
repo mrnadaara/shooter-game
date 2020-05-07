@@ -6,19 +6,11 @@
 
 ![alt text](./docs/demo.gif)
 
-## [Live Demo](https://mrnadaara.github.io/weather-js/)
-
-## Libraries used
-
-- Phaser 3
-
-- Bootstrap 4
-
-- Webpack
+## [Live Demo](https://mrnadaara.github.io/shooter-game/)
 
 ## Get Started
 
-Head over to this [link](https://mrnadaara.github.io/weather-js/) and press play to start.
+Head over to this [link](https://mrnadaara.github.io/shooter-game/) and press play to start.
 
 Objectives of the game: Simply survive the enemy hoard and rack up the highest score you can.
 
@@ -27,7 +19,15 @@ creatures.
 
 Before starting the game, you will be prompted to enter your name (just so you can brag to your friends when you get the highest score) and you won't need to enter it again as it will be saved on your browser.
 
-### For Developers only
+## For Developers only
+
+### Libraries used
+
+- Phaser 3
+
+- Bootstrap 4
+
+- Webpack
 
 1. Clone repo ``` git clone https://github.com/mrnadaara/shooter-game.git ```
 
@@ -37,7 +37,7 @@ Before starting the game, you will be prompted to enter your name (just so you c
 
 4. You can start a dev webpack server by running ``` npm run start ```
 
-## Testing
+### Testing
 
 This app currently has unit tests for the Leaderboard API. The test will determine promise resolve and rejects
 based on input provided.
@@ -47,10 +47,11 @@ Following functions were tested:
 - getScores()
 - updateScores()
 
-## Future releases
+### Future releases
 
-1. Add animations to make UI experience more pleasant
-2. Add splash screen before page loads up
+1. Add health bars
+2. Add Boss battle
+3. Levels
 
 # Contributor
 
