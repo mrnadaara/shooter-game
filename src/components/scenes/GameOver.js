@@ -1,13 +1,20 @@
 import { Scene } from 'phaser';
+import { LeaderboardAPI } from '../../helpers';
 
 export default class GameOver extends Scene {
   constructor() {
     super({ key: 'GameOver' });
     this.score = 0;
+    this.leaderboard = '';
   }
 
   init({ score }) {
     this.score = score;
+    LeaderboardAPI.showLeaderboard(localStorage.getItem('playerName'), score).then((result) => {
+      this.leaderboardText.setText(result);
+    }, (error) => {
+      console.log(error);
+    });
   }
 
   create() {
@@ -64,6 +71,20 @@ export default class GameOver extends Scene {
       },
     );
 
+    this.leaderboardText = this.add.text(
+      this.game.config.width * 0.5,
+      330,
+      'Loading...',
+      {
+        fontFamily: 'monospace',
+        fontSize: 28,
+        fontStyle: 'bold',
+        color: '#ffffff',
+        align: 'center',
+      },
+    );
+
     this.title.setOrigin(0.5);
+    this.leaderboardText.setOrigin(0.5);
   }
 }
